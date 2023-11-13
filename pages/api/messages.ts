@@ -6,8 +6,6 @@ export default function handler(
   res: NextApiResponse
 ) {
   const { method, query } = req;
-  console.log("query", query);
-  console.log("method", method);
   let mode = req.query["hub.mode"];
   let token = req.query["hub.verify_token"];
   let challenge = req.query["hub.challenge"];
