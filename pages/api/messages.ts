@@ -1,14 +1,17 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-
-
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { method, query } = req;
-  const { mode, token, challenge } = query;
+  console.log("query", query);
+  console.log("method", method);
+  let mode = req.query["hub.mode"];
+  let token = req.query["hub.verify_token"];
+  let challenge = req.query["hub.challenge"];
+
   const verify_token = process.env.FB_VERIFY_TOKEN;
   switch (method) {
     case 'GET':
