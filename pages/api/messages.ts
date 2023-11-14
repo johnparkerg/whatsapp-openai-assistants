@@ -48,10 +48,7 @@ export default async function handler(
           return res.status(403);
         }
       }
-      else {
-        const thread = await openai.beta.threads.create();
-        console.log(thread);
-      }
+      break;
     }
     case 'POST': {
       if (body.object) {
@@ -120,6 +117,7 @@ export default async function handler(
       } else {
         res.status(404);
       }
+      break;
     }
     default: {
       res.setHeader('Allow', ['GET', 'POST'])

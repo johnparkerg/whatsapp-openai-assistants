@@ -14,6 +14,8 @@ The Webhook Callback URL for Facebook is base_url/api/messages
 
 Make sure you create a permanent token so that your app doesn't stop working randomly, more about this here: https://developers.facebook.com/docs/whatsapp/business-management-api/get-started#1--acquire-an-access-token-using-a-system-user-or-facebook-login
 
+Copy the token to WHATSAPP_TOKEN in your env file
+
 ### Signing up for Upstash
 
 To use this project, you'll need to sign up for an account in Upstash at https://upstash.com.
@@ -26,7 +28,7 @@ Create an OpenAI account and create an assistant in the playground, then copy th
 
 ### Getting Started
 
-First make sure to copy the .env.sample and add OpenAI, Upstash and Facebook tokens.
+First make sure to copy the .env.sample to .env.local and add OpenAI, Upstash and Facebook tokens.
 
 The FB_VERIFY can be any token you define just as long as it matches the one you use setting up your webhook in FB.
 
