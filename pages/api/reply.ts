@@ -29,7 +29,7 @@ export default async function handler(
             );
             console.log(run);
             if (run.status === "queued" || run.status === "in_progress") {
-                axios({
+                await axios({
                     method: "POST", // Required, HTTP method, a string, e.g. POST, GET
                     url:
                         "https://qstash.upstash.io/v2/publish/" +
@@ -47,6 +47,7 @@ export default async function handler(
                 }).catch((error) => {
                     console.log("error", error);
                 });
+                return res.status(200).end()
             }
             else if (run.status === "completed") {
                 const messages = await openai.beta.threads.messages.list(
@@ -86,7 +87,9 @@ export default async function handler(
                 res.json({ success: true });
                 return res.status(200).end()
             }
-            return res.status(200).end()
+            else {
+                return res.status(200).end()
+            }
         }
         default: {
             res.setHeader('Allow', ['GET', 'POST'])
