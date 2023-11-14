@@ -83,12 +83,14 @@ export default async function handler(
 
                     }
                 }
-                return res.json({ success: true });
+                res.json({ success: true });
+                return res.status(200).end()
             }
         }
         default: {
             res.setHeader('Allow', ['GET', 'POST'])
-            return res.status(405).end(`Method ${method} Not Allowed`)
+            res.status(405).end(`Method ${method} Not Allowed`)
+            return res.status(200).end()
         }
     }
 }

@@ -42,10 +42,11 @@ export default async function handler(
         if (mode === "subscribe" && token === verify_token) {
           // Respond with 200 OK and challenge token from the request
           console.log("WEBHOOK_VERIFIED");
-          return res.status(200).send(challenge);
+          res.status(200).send(challenge);
+          return res.end();
         } else {
           // Responds with '403 Forbidden' if verify tokens do not match
-          return res.status(403);
+          return res.status(403).end()
         }
       }
     }
@@ -111,9 +112,10 @@ export default async function handler(
             return res.status(500).json({ success: false });
           });
           res.json({ success: true });
+          return res.status(200).end()
         }
       } else {
-        return res.status(404);
+        return res.status(404).end();
       }
     }
     default: {
