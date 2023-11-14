@@ -2,7 +2,29 @@
 
 This project serves to bridge the gap between Whatsapp Cloud API and OpenAI's Assistants
 
-## Getting Started
+## Prerequisites
+
+### Setting up Facebook App
+
+To get started, create a Facebook App and configure it using the instructions provided in this guide: https://developers.facebook.com/docs/whatsapp/cloud-api/get-started/
+
+Note that you can optionally skip step 4 and use this project directly.
+
+The Webhook Callback URL for Facebook is base_url/api/messages
+
+Make sure you create a permanent token so that your app doesn't stop working randomly, more about this here: https://developers.facebook.com/docs/whatsapp/business-management-api/get-started#1--acquire-an-access-token-using-a-system-user-or-facebook-login
+
+### Signing up for Upstash
+
+To use this project, you'll need to sign up for an account in Upstash at https://upstash.com.
+
+We will use Qstash for Polling Assistant Runs and Redis for saving user thread ids.
+
+### OpenAI
+
+Create an OpenAI account and create an assistant in the playground, then copy the assistant ID (starts with asst_) to your env variables.
+
+### Getting Started
 
 First make sure to copy the .env.sample and add OpenAI, Upstash and Facebook tokens.
 
