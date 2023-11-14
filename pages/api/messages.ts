@@ -117,6 +117,7 @@ export default async function handler(
       } else {
         return res.status(404).end();
       }
+      return res.status(200).end()
     }
     default: {
       res.setHeader('Allow', ['GET', 'POST'])
