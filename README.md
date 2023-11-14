@@ -1,6 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Whatsapp - Open AI Assistants Connector
+
+This project serves to bridge the gap between Whatsapp Cloud API and OpenAI's Assistants
 
 ## Getting Started
+
+First make sure to copy the .env.sample and add OpenAI, Upstash and Facebook tokens.
+
+The FB_VERIFY can be any token you define just as long as it matches the one you use setting up your webhook in FB.
 
 First, run the development server:
 

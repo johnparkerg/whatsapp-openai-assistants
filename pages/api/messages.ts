@@ -81,7 +81,7 @@ export default async function handler(
           const msg_body = body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
           const name = body.entry[0].changes[0].value.contacts[0].profile.name;
 
-          const message = await openai.beta.threads.messages.create(
+          await openai.beta.threads.messages.create(
             thread_id,
             {
               role: "user",
@@ -91,8 +91,7 @@ export default async function handler(
           const run = await openai.beta.threads.runs.create(
             thread_id,
             {
-              assistant_id: assistant_id,
-              //instructions: `El nombre del usuario es: ${name}`
+              assistant_id: assistant_id
             }
           );
           console.log(run);
@@ -111,11 +110,13 @@ export default async function handler(
               "Authorization": "Bearer " + upstash_token,
               "Upstash-Delay": "2s",
             },
+          }).then(() => {
+            res.json({ success: true });
           }).catch((error) => {
             console.log("error", error);
+            res.status(500).json({ success: false });
           });
         }
-        res.json({ success: true });
       } else {
         res.status(404);
       }
