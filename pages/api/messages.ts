@@ -48,7 +48,6 @@ export default async function handler(
           return res.status(403);
         }
       }
-      break;
     }
     case 'POST': {
       if (body.object) {
@@ -92,7 +91,7 @@ export default async function handler(
             }
           );
           console.log(run);
-          axios({
+          await axios({
             method: "POST",
             url:
               "https://qstash.upstash.io/v2/publish/" +
@@ -107,21 +106,19 @@ export default async function handler(
               "Authorization": "Bearer " + upstash_token,
               "Upstash-Delay": "2s",
             },
-          }).then(() => {
-            res.json({ success: true });
           }).catch((error) => {
             console.log("error", error);
-            res.status(500).json({ success: false });
+            return res.status(500).json({ success: false });
           });
+          res.json({ success: true });
         }
       } else {
-        res.status(404);
+        return res.status(404);
       }
-      break;
     }
     default: {
       res.setHeader('Allow', ['GET', 'POST'])
-      res.status(405).end(`Method ${method} Not Allowed`)
+      return res.status(405).end(`Method ${method} Not Allowed`)
     }
   }
 }

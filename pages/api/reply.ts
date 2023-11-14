@@ -62,7 +62,7 @@ export default async function handler(
                     const content = message.content[0];
                     // Filter content from message to avoid MessageContentImageFile
                     if (content.type === "text") {
-                        axios({
+                        await axios({
                             method: "POST", // Required, HTTP method, a string, e.g. POST, GET
                             url:
                                 "https://graph.facebook.com/v17.0/" +
@@ -77,21 +77,18 @@ export default async function handler(
                                 "Content-Type": "application/json",
                                 "Authorization": "Bearer " + wa_token,
                             },
-                        })
-                            .then(() => {
-                                res.json({ success: true });
-                            })
-                            .catch((error) => {
-                                console.log("error", error);
-                            });
+                        }).catch((error) => {
+                            console.log("error", error);
+                        });
+
                     }
                 }
+                return res.json({ success: true });
             }
-            break;
         }
         default: {
             res.setHeader('Allow', ['GET', 'POST'])
-            res.status(405).end(`Method ${method} Not Allowed`)
+            return res.status(405).end(`Method ${method} Not Allowed`)
         }
     }
 }
