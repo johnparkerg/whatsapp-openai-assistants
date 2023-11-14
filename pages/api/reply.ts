@@ -77,13 +77,16 @@ export default async function handler(
                                 "Content-Type": "application/json",
                                 "Authorization": "Bearer " + wa_token,
                             },
-                        }).catch((error) => {
-                            console.log("error", error);
-                        });
+                        })
+                            .then(() => {
+                                res.json({ success: true });
+                            })
+                            .catch((error) => {
+                                console.log("error", error);
+                            });
                     }
                 }
             }
-            res.json({ success: true });
         }
         default: {
             res.setHeader('Allow', ['GET', 'POST'])
