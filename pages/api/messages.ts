@@ -62,21 +62,19 @@ export default async function handler(
           console.log(JSON.stringify(body, null, 2));
           const phone_number_id =
             body.entry[0].changes[0].value.metadata.phone_number_id;
-          const user: any = await redis.get(phone_number_id);
+          const from = body.entry[0].changes[0].value.messages[0].from.replace(/^521/, "52"); // extract the phone number from the webhook payload
+          const msg_body = body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
+          const name = body.entry[0].changes[0].value.contacts[0].profile.name; const user: any = await redis.get(phone_number_id);
           let thread_id = "";
           // Create a new thread if user is not found
           if (!user || !user.thread_id) {
             const thread = await openai.beta.threads.create();
-            await redis.set(phone_number_id, { thread_id: thread.id });
+            await redis.set(from, { thread_id: thread.id, name });
             thread_id = thread.id;
           }
           else {
             thread_id = user.thread_id;
           }
-
-          const from = body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
-          const msg_body = body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-          const name = body.entry[0].changes[0].value.contacts[0].profile.name;
 
           await openai.beta.threads.messages.create(
             thread_id,
@@ -99,7 +97,7 @@ export default async function handler(
               base_url + "/api/reply",
             data: {
               phone_number_id,
-              to: from.replace(/^521/, "52"),
+              to: from,
               run,
             },
             headers: {
