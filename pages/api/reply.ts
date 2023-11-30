@@ -67,7 +67,6 @@ export default async function handler(
                             "Content-Type": "application/json",
                         },
                     }).then((response) => {
-                        console.log(JSON.stringify(response.data, null, 2))
                         tool_outputs.push({
                             tool_call_id: tool_call.id,
                             output: JSON.stringify(response.data),
@@ -84,8 +83,6 @@ export default async function handler(
                             tool_outputs: tool_outputs,
                         }
                     );
-
-                    console.log(run_x);
                 }
                 catch (e) {
                     console.log(e)
