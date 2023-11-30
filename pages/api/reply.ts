@@ -49,6 +49,48 @@ export default async function handler(
                 });
                 return res.status(200).end()
             }
+            else if (run.status === "requires_action") {
+                //run.required_action.submit_tool_outputs.tool_calls is an array of objects, we will iterate through it and call the functions
+                //Call process.env.FUNCTIONS_URL + function.function.name and send the function.function.arguments as the body
+                const tool_calls = run.required_action!.submit_tool_outputs.tool_calls;
+                const tool_outputs: { tool_call_id: string; output: any; }[] = [];
+                for (let i = 0; i < tool_calls.length; i++) {
+                    const tool_call = tool_calls[i]
+                    const function_name = tool_call.function.name
+                    const function_arguments = JSON.parse(tool_call.function.arguments)
+                    function_arguments["user_id"] = to
+                    await axios({
+                        method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+                        url: process.env.FUNCTIONS_URL + function_name,
+                        data: function_arguments,
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }).then((response) => {
+                        console.log(JSON.stringify(response.data, null, 2))
+                        tool_outputs.push({
+                            tool_call_id: tool_call.id,
+                            output: JSON.stringify(response.data),
+                        })
+                    }).catch((error) => {
+                        console.log("error", error);
+                    });
+                }
+                try {
+                    const run_x = await openai.beta.threads.runs.submitToolOutputs(
+                        run.thread_id,
+                        run.id,
+                        {
+                            tool_outputs: tool_outputs,
+                        }
+                    );
+
+                    console.log(run_x);
+                }
+                catch (e) {
+                    console.log(e)
+                }
+            }
             else if (run.status === "completed") {
                 const messages = await openai.beta.threads.messages.list(
                     run.thread_id
