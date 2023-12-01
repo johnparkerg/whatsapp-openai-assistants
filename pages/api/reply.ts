@@ -50,8 +50,6 @@ export default async function handler(
                 return res.status(200).end()
             }
             else if (run.status === "requires_action") {
-                //run.required_action.submit_tool_outputs.tool_calls is an array of objects, we will iterate through it and call the functions
-                //Call process.env.FUNCTIONS_URL + function.function.name and send the function.function.arguments as the body
                 const tool_calls = run.required_action!.submit_tool_outputs.tool_calls;
                 const tool_outputs: { tool_call_id: string; output: any; }[] = [];
                 for (let i = 0; i < tool_calls.length; i++) {
