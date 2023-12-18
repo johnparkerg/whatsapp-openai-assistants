@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model messages {
+  message_id     Int      @id(map: "whatsapp_messages_pkey") @default(autoincrement())
+  user_id        Int?
+  sender_phone   String?  @db.VarChar(15)
+  receiver_phone String?  @db.VarChar(15)
+  message_text   String?
+  raw_message    String?
+  created_on     DateTime @default(now()) @db.Timestamp(6)
+  users          users?   @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "whatsapp_messages_user_id_fkey")
+}
+
+model users {
+  user_id      Int        @id @default(autoincrement())
+  username     String?
+  phone_number String     @unique
+  thread_id    String?
+  messages     messages[]
+}

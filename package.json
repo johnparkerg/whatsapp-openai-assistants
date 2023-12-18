@@ -6,15 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "dotenv -e .env.local npx prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/client": "^5.7.0",
     "@upstash/redis": "^1.25.1",
     "axios": "^1.6.1",
     "next": "14.0.2",
     "openai": "^4.17.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20",

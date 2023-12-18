@@ -1,10 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from "axios";
 import OpenAI from 'openai';
-import { Redis } from '@upstash/redis'
+import messagesService from '../../utils/messages'
+import usersService from '../../utils/users'
 
 // Assert that required environment variables are provided
-if (!process.env.OPENAI_API_KEY || !process.env.UPSTASH_TOKEN || !process.env.REDIS_URL || !process.env.REDIS_TOKEN || !process.env.ASSISTANT_ID || !process.env.BASE_URL) {
+if (!process.env.OPENAI_API_KEY || !process.env.UPSTASH_TOKEN || !process.env.ASSISTANT_ID || !process.env.BASE_URL) {
   throw new Error('Required environment variables are missing');
 }
 
@@ -12,12 +13,6 @@ if (!process.env.OPENAI_API_KEY || !process.env.UPSTASH_TOKEN || !process.env.RE
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
-
-// Redis configuration
-const redis = new Redis({
-  url: process.env.REDIS_URL!,
-  token: process.env.REDIS_TOKEN!,
-})
 
 // Other constants
 const assistant_id = process.env.ASSISTANT_ID!;
@@ -52,6 +47,7 @@ export default async function handler(
     }
     case 'POST': {
       if (body.object) {
+        // TODO Define SChema with Zod and validate by parsing the body
         if (
           body.entry &&
           body.entry[0].changes &&
@@ -59,23 +55,41 @@ export default async function handler(
           body.entry[0].changes[0].value.messages &&
           body.entry[0].changes[0].value.messages[0]
         ) {
-          console.log(JSON.stringify(body, null, 2));
+          console.log("Received message");
           const phone_number_id =
             body.entry[0].changes[0].value.metadata.phone_number_id;
-          const from = body.entry[0].changes[0].value.messages[0].from.replace(/^521/, "52"); // extract the phone number from the webhook payload
+          const from = body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
+          const to = body.entry[0].changes[0].value.metadata.display_phone_number;
           const msg_body = body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
           const name = body.entry[0].changes[0].value.contacts[0].profile.name;
-          const user: any = await redis.get(from);
-          let thread_id = "";
+          //const user: any = await ;
+          let user = await usersService.getUserByPhoneNumber(from);
+          let thread_id;
           // Create a new thread if user is not found
-          if (!user || !user.thread_id) {
-            const thread = await openai.beta.threads.create();
-            await redis.set(from, { thread_id: thread.id, name });
-            thread_id = thread.id;
-          }
-          else {
+          if (user) {
             thread_id = user.thread_id;
           }
+          if (!user || user === null) {
+            const thread = await openai.beta.threads.create();
+            user = {
+              username: name,
+              phone_number: from,
+              thread_id: thread.id,
+            }
+            user = await usersService.saveUser(user);
+            thread_id = thread.id;
+          }
+          if (!thread_id) {
+            return res.status(500).end()
+          }
+
+          await messagesService.saveMessage({
+            user_id: user.user_id || 0,
+            sender_phone: from,
+            receiver_phone: to,
+            message_text: body.entry[0].changes[0].value.messages[0].text.body,
+            raw_message: JSON.stringify(body),
+          });
 
           await openai.beta.threads.messages.create(
             thread_id,
@@ -90,7 +104,6 @@ export default async function handler(
               assistant_id: assistant_id
             }
           );
-          console.log(run);
           await axios({
             method: "POST",
             url:
@@ -99,7 +112,9 @@ export default async function handler(
             data: {
               phone_number_id,
               to: from,
+              from: to,
               run,
+              user_id: user.user_id
             },
             headers: {
               "Content-Type": "application/json",

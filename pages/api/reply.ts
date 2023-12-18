@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import OpenAI from 'openai';
 import axios from "axios";
+import messagesService from '@/utils/messages';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -23,6 +24,8 @@ export default async function handler(
             console.log(JSON.stringify(body, null, 2))
             const phone_number_id = body.phone_number_id
             const to = body.to
+            const from = body.from
+            const user_id = body.user_id
             const run = await openai.beta.threads.runs.retrieve(
                 body.run.thread_id,
                 body.run.id
@@ -118,7 +121,13 @@ export default async function handler(
                         }).catch((error) => {
                             console.log("error", error);
                         });
-
+                        await messagesService.saveMessage({
+                            user_id: user_id,
+                            sender_phone: from,
+                            receiver_phone: to,
+                            message_text: content.text.value,
+                            raw_message: JSON.stringify(body),
+                        });
                     }
                 }
                 res.json({ success: true });
