@@ -30,7 +30,6 @@ export default async function handler(
                 body.run.thread_id,
                 body.run.id
             );
-            console.log(run);
             if (run.status === "queued" || run.status === "in_progress") {
                 await axios({
                     method: "POST", // Required, HTTP method, a string, e.g. POST, GET
@@ -96,10 +95,8 @@ export default async function handler(
                 const run_assistant_messages = messages.data.filter(
                     (message) => message.role === "assistant" && message.run_id === run.id
                 );
-                console.log(run_assistant_messages)
                 for (let i = 0; i < run_assistant_messages.length; i++) {
                     const message = run_assistant_messages[i]
-                    console.log(JSON.stringify(message, null, 2))
                     const content = message.content[0];
                     // Filter content from message to avoid MessageContentImageFile
                     if (content.type === "text") {
