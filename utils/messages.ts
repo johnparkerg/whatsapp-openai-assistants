@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 
+console.log("MESSAGES Using storage: " + process.env.STORAGE);
+
 const MessageSchema = z.object({
     message_id: z.number().int().nonnegative().optional(),
     user_id: z.number().int().nonnegative(),

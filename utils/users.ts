@@ -2,6 +2,9 @@ import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { Redis } from '@upstash/redis'
 
+console.log("USERS Using storage: " + process.env.STORAGE);
+
+
 // Assert that required environment variables are provided
 if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
     throw new Error('Required environment variables are missing');

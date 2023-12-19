@@ -8,36 +8,30 @@ import usersService from '../../utils/users'
 if (!process.env.OPENAI_API_KEY || !process.env.UPSTASH_TOKEN || !process.env.ASSISTANT_ID || !process.env.BASE_URL) {
   throw new Error('Required environment variables are missing');
 }
-console.log("Required environment variables are present");
 
 // OpenAI configuration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
-console.log("OpenAI API Key is present");
 
 // Other constants
 const assistant_id = process.env.ASSISTANT_ID!;
 const base_url = process.env.BASE_URL!;
 const upstash_token = process.env.UPSTASH_TOKEN!;
-console.log("Upstash token is present");
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("Received request");
   const verify_token = process.env.FB_VERIFY_TOKEN;
   const { method, query, body } = req;
 
   let mode = query["hub.mode"];
   let token = query["hub.verify_token"];
   let challenge = query["hub.challenge"];
-  console.log("mode", mode);
 
   switch (method) {
     case 'GET': {
-      console.log("Received GET request");
       if (mode && token) {
         // Check the mode and token sent are correct
         if (mode === "subscribe" && token === verify_token) {
