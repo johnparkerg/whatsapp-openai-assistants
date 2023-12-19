@@ -39,6 +39,8 @@ export default async function handler(
                     data: {
                         phone_number_id,
                         to: to,
+                        from: from,
+                        user_id: user_id,
                         run,
                     },
                     headers: {
