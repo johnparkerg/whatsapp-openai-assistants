@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { Redis } from '@upstash/redis'
-import { aw } from '@upstash/redis/zmscore-b6b93f14';
 
 // Assert that required environment variables are provided
 if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
